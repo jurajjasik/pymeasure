@@ -32,7 +32,7 @@ def print_random_number():
 
 class MockInstrumentControlWindow(InstrumentControlWindow):
     def __init__(self):
-        super(MockInstrumentControlWindow, self).__init__(
+        super().__init__(
             MockInstrument(),
             measurements=["wave", "voltage"],
             controls=["time"],
