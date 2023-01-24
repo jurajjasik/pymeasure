@@ -1,0 +1,2 @@
+set PYTHONPATH=%PYTHONPATH%;.
+pytest

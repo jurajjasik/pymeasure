@@ -28,6 +28,7 @@ from .estimator_widget import EstimatorWidget, EstimatorThread
 from .image_frame import ImageFrame
 from .image_widget import ImageWidget
 from .inputs_widget import InputsWidget
+from .instrument_control_widget import InstrumentControlWidget
 from .log_widget import LogWidget
 from .plot_frame import PlotFrame
 from .plot_widget import PlotWidget
