@@ -126,6 +126,7 @@ class ManagedWindowBase(QtWidgets.QMainWindow):
                  inputs_in_scrollarea=False,
                  directory_input=False,
                  hide_groups=True,
+                 instrument_widget=None
                  ):
 
         super().__init__(parent)
@@ -145,6 +146,7 @@ class ManagedWindowBase(QtWidgets.QMainWindow):
         log.setLevel(log_level)
         self.log.setLevel(log_level)
         self.widget_list = widget_list
+        self.instrument_widget = instrument_widget
 
         # Check if the get_estimates function is reimplemented
         self.use_estimator = not self.procedure_class.get_estimates == Procedure.get_estimates
@@ -266,6 +268,12 @@ class ManagedWindowBase(QtWidgets.QMainWindow):
             estimator_dock.setWidget(self.estimator)
             estimator_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
             self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, estimator_dock)
+
+        if self.instrument_widget is not None:
+            instrument_dock = QtWidgets.QDockWidget('Instrument')
+            instrument_dock.setWidget(self.instrument_widget)
+            instrument_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+            self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, instrument_dock)
 
         self.tabs = QtWidgets.QTabWidget(self.main)
         for wdg in self.widget_list:
