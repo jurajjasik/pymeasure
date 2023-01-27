@@ -68,6 +68,7 @@ class StoppableQThread(QtCore.QThread):
 
 class InstrumentThread(StoppableQThread):
     new_value = QtCore.Signal(str, object)
+    error = QtCore.Signal(object)
 
     def __init__(self, instrument, update_list, delay=0.01):
         StoppableQThread.__init__(self)
@@ -80,8 +81,11 @@ class InstrumentThread(StoppableQThread):
         self.wait()
 
     def _get_value(self, name):
-        value = getattr(self.instrument, name)
-        self.new_value.emit(name, value)
+        try:
+            value = getattr(self.instrument, name)
+            self.new_value.emit(name, value)
+        except Exception as e:
+            self.error.emit(e)
 
     def _get_values(self):
         for name in self.update_list:

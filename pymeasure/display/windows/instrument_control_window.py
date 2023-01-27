@@ -90,6 +90,9 @@ class InstrumentControlWindow(QtWidgets.QMainWindow):
         functions=None,
         options=None,
         parent=None,
+        auto_get=False,
+        auto_set=True,
+        auto_get_delay=0.5
     ):
         super().__init__(parent)
         app = QtCore.QCoreApplication.instance()
@@ -101,7 +104,10 @@ class InstrumentControlWindow(QtWidgets.QMainWindow):
             settings=settings,
             controls=controls,
             functions=functions,
-            options=options
+            options=options,
+            auto_get=auto_get,
+            auto_set=auto_set,
+            auto_get_delay=auto_get_delay
         )
 
         self._setup_ui()

@@ -55,6 +55,7 @@ class InstrumentControlWidget(QtWidgets.QWidget):
         parent=None,
         auto_get=False,
         auto_set=True,
+        auto_get_delay=0.5
     ):
         super().__init__(parent)
 
@@ -68,6 +69,7 @@ class InstrumentControlWidget(QtWidgets.QWidget):
 
         self.auto_read = auto_get
         self.auto_write = auto_set
+        self.auto_read_delay = auto_get_delay
 
         self.update_list = []
         self.update_list.extend(
@@ -79,12 +81,14 @@ class InstrumentControlWidget(QtWidgets.QWidget):
         self.update_list.extend(
             [m for m in self.settings.keys() if hasattr(self.instrument, str(m))])
 
-        self.update_thread = InstrumentThread(self.instrument, self.update_list)
+        self.update_thread = InstrumentThread(self.instrument, self.update_list, delay=self.auto_read_delay)
         self.update_thread.new_value.connect(self.update_value)
+        self.update_thread.error.connect(self.error)
 
         self._setup_ui()
         self._layout()
         self.get_and_update_all_values()
+        self._auto_settings_changed()
 
     def _setup_ui(self):
         self._elements = []
@@ -176,6 +180,10 @@ class InstrumentControlWidget(QtWidgets.QWidget):
         self.auto_write_box = QtWidgets.QCheckBox("Auto Write")
         self.auto_write_box.setChecked(self.auto_write)
         self.auto_write_box.stateChanged.connect(self._auto_settings_changed)
+        
+        # Adding status label
+        self.status_label = QtWidgets.QLabel()
+        self.status_label.setWordWrap(True)
 
     def _layout(self):
         layout = QtWidgets.QGridLayout(self)
@@ -226,6 +234,9 @@ class InstrumentControlWidget(QtWidgets.QWidget):
 
         global_layout.addWidget(self.auto_read_box, 1, 0)
         global_layout.addWidget(self.auto_write_box, 1, 1)
+        
+        global_layout.addWidget(QtWidgets.QLabel("Status:"), 2, 0)
+        global_layout.addWidget(self.status_label, 2, 1)
 
         global_widget.setLayout(global_layout)
 
@@ -245,6 +256,10 @@ class InstrumentControlWidget(QtWidgets.QWidget):
 
         if not element.hasFocus():
             element.setValue(value)
+        self.status_label.setText("OK")
+            
+    def error(self, err):
+        self.status_label.setText(str(err))
 
     def get_and_update_all_values(self):
         """
@@ -305,7 +320,6 @@ class InstrumentControlWidget(QtWidgets.QWidget):
         """Get the corresponding type of input for a given parameter.
         :param parameter: A parameter
         """
-
         if parameter.ui_class is not None:
             element = parameter.ui_class(parameter)
 
